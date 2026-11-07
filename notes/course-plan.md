@@ -1,0 +1,11 @@
+# Background agents workshop — course plan
+
+The learning promise is to give an agent a standing goal, leave it working, and understand how it wakes correctly after an event, a failure, or a human decision. The course is a one-day live workshop, later a VOD, for professional JavaScript/TypeScript engineers. Each lesson includes engineering discussion, a small live coding edit, a trace or failure experiment, and at least 15 minutes for questions and catch-up.
+
+The supplied checkout service runs locally as a separate process. It owns state and emits alerts. Startup flags select a feature failure, faulty release, dependency outage, or healthy state. Its operations API changes state, so a later observation can verify an effect. There is no simulator page or hidden scenario branch in the harness. The supplied operator app has Inbox, Activity, and Events. Neon stores events, incidents, actions, human decisions, and activity. Inngest stores workflow checkpoints and waits.
+
+One checkout instance has one active incident run. The first alert opens it; subsequent alerts join and wake it. Recovery completes it after fresh observation. A checkout restart creates a new instance and supersedes unfinished work. This keeps event correlation deterministic for class while making the limits clear: a production multi-service system needs explicit incident keys or a correlation policy.
+
+Students write the agent harness across six branches: a bounded goal-driven loop, durable steps, event waits, approval, safe retries, and help requests. The model proposes actions. The harness owns policy, state-version checks, decision budgets, terminal outcomes, and human gates. The effect-owning service owns idempotency. The main drills are feature repair, release rollback with approval, dependency help and recovery, and a lost tool response. The advanced lab evaluates both world outcome and the action trajectory.
+
+The code is intentionally small. The depth is in distinguishing notification from state, deciding the lifecycle of an incident, placing authority at the correct boundary, recovering from ambiguous side effects, and designing evaluation evidence. Keep old prototype OpenSpec files as historical design records; the README and lesson notes describe the current implementation.

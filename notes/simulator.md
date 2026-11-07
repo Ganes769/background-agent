@@ -1,0 +1,9 @@
+# Checkout service contract
+
+The supplied checkout process is a small synthetic service, not part of the agent harness. It owns state in memory and starts fresh with a new instance ID each time. Use startup flags to create a healthy service, a broken feature rollout, a faulty release, or a dependency outage. It emits alert events to the operator API and exposes `GET /state`, `GET /logs`, `GET /changes`, and `POST /operations` on port 3004.
+
+The event body contains a stable event ID, `serviceId`, `instanceId`, type, and data. The operator API persists the event and assigns it to the one active incident for that service instance. The agent treats event data as a reason to wake, then reads `/state` for current evidence. A duplicate delivery with the same ID does not create another incident. On checkout restart, the new instance supersedes old active runs and their pending approvals.
+
+Read-only operations return logs or recent changes. `disable_feature` and `rollback_release` change the service state and can make it healthy. They accept `expectedVersion`; an out-of-date write gets a stale result. Every operation accepts an `actionId`. The service stores the result under that ID and returns it again on retry, rejecting a reused ID with different arguments. `--lose-next-action-response` commits one mutating action but returns 503 once so we can see why a durable step alone cannot guarantee a single effect.
+
+The service retries event delivery while its process is alive. Its state and event outbox are intentionally in memory; restarting it resets the world. That makes the instance boundary visible in class but is not a production durability guarantee. A real service would store an outbox transactionally with its state changes and use authenticated calls. See the README for commands and flags.
